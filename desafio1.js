@@ -1,6 +1,8 @@
 const fs = require("fs").promises;
 const { createInterface } = require("readline");
 
+
+
 class ProductManager {
     constructor(filePath) {
         this.path = filePath;
@@ -281,7 +283,9 @@ class ProductManager {
     }
 }
 
-
+module.exports = {
+    ProductManager
+};
 
 const ejecutar = async () => {
     try {
@@ -299,3 +303,5 @@ const ejecutar = async () => {
 };
 
 ejecutar();
+
+
