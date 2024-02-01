@@ -4,18 +4,9 @@
     "title": "product77",
     "description": "description77",
     "price": 11000,
-    "thumbnail": "url",
-    "code": "code7",
+    "thumbnail": "code7",
+    "code": "800",
     "stock": 800
-  },
-  {
-    "id": 2,
-    "title": "product1",
-    "description": "description1",
-    "price": 100,
-    "thumbnail": "url",
-    "code": "code1",
-    "stock": 100
   },
   {
     "id": 3,

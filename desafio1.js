@@ -94,7 +94,7 @@ class ProductManager {
                 output: process.stdout
             });
 
-            rl.question("Ingrese el código del producto que desea buscar o agregar: ", async (code) => {
+            rl.question("Ingrese el código del producto que desea buscar, agregar, actualizar o eliminar: ", async (code) => {
                 const product = await this.getProductByCode(code);
 
                 if (product) {
@@ -104,8 +104,14 @@ class ProductManager {
                         if (answer.toLowerCase() === "si" || answer.toLowerCase() === "sí") {
                             await this.promptUpdateProduct(rl, product.id);
                         } else {
-                            rl.close();
-                            process.exit(0);
+                            rl.question("¿Desea eliminar este producto? (Sí/No): ", async (deleteAnswer) => {
+                                if (deleteAnswer.toLowerCase() === "si" || deleteAnswer.toLowerCase() === "sí") {
+                                    await this.promptDeleteProduct(rl, product.id);
+                                } else {
+                                    rl.close();
+                                    process.exit(0);
+                                }
+                            });
                         }
                     });
                 } else {
@@ -115,8 +121,14 @@ class ProductManager {
                         if (answer.toLowerCase() === "si" || answer.toLowerCase() === "sí") {
                             await this.promptAddProduct(rl);
                         } else {
-                            rl.close();
-                            process.exit(0);
+                            rl.question("¿Desea eliminar un producto? (Sí/No): ", async (answer) => {
+                                if (answer.toLowerCase() === "si" || answer.toLowerCase() === "sí") {
+                                    await this.promptDeleteProduct(rl);
+                                } else {
+                                    rl.close();
+                                    process.exit(0);
+                                }
+                            });
                         }
                     });
                 }
@@ -126,6 +138,8 @@ class ProductManager {
             throw error;
         }
     }
+
+
 
     // Método que guía al usuario para agregar un nuevo producto interactivamente
     async promptAddProduct(rl) {
@@ -238,7 +252,36 @@ class ProductManager {
             throw error;
         }
     }
+
+    async promptDeleteProduct(rl) {
+        rl.question("Ingrese el código del producto que desea eliminar: ", async (code) => {
+            const product = await this.getProductByCode(code);
+
+            if (product) {
+                await this.deleteProduct(product.id);
+                console.log("Producto eliminado:", product);
+            } else {
+                console.log("No existe un producto con el código proporcionado.");
+            }
+
+            rl.close();
+            process.exit(0);
+        });
+    }
+
+    async deleteProduct(productId) {
+        try {
+            this.products = await this.getProducts();
+            const updatedProducts = this.products.filter(product => product.id !== productId);
+            await fs.writeFile(this.path, JSON.stringify(updatedProducts, null, 2), { encoding: 'utf-8' });
+        } catch (error) {
+            console.error("Error al eliminar producto:", error);
+            throw error;
+        }
+    }
 }
+
+
 
 const ejecutar = async () => {
     try {
