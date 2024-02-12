@@ -43,6 +43,23 @@ class ProductManager {
         }
     }
 
+    // Método que obtiene un producto por su ID
+    async getProductById(id) {
+        try {
+            this.products = await this.getProducts();
+
+            const found = this.products.find(element => element.id === id);
+            if (found) {
+                return found;
+            } else {
+                throw new Error(`No se encontró ningún producto con el ID ${id}`);
+            }
+        } catch (error) {
+            console.error("Error al obtener producto por ID:", error);
+            throw error;
+        }
+    }
+
     // Método que agrega un nuevo producto a la lista
     async addProduct(title, description, price, thumbnail, code, stock) {
         try {
@@ -94,11 +111,36 @@ class ProductManager {
                 output: process.stdout
             });
 
-            rl.question("Ingrese el código del producto que desea buscar, agregar, actualizar o eliminar: ", async (code) => {
+            rl.question("Ingrese el código o el ID del producto que desea buscar, agregar, actualizar o eliminar: ", async (code) => {
+                const productById = await this.getProductById(parseInt(code));
                 const product = await this.getProductByCode(code);
 
-                if (product) {
-                    console.log("Producto encontrado:", product);
+                if (productById) {
+                    console.log("Producto encontrado por ID:", productById);
+
+                    rl.question("¿Desea actualizar la información de este producto? (Sí/No): ", async (answer) => {
+                        if (answer.toLowerCase() === "si" || answer.toLowerCase() === "sí") {
+                            await this.promptUpdateProduct(rl, productById.id);
+                        } else {
+                            rl.question("¿Desea eliminar este producto? (Sí/No): ", async (deleteAnswer) => {
+                                if (deleteAnswer.toLowerCase() === "si" || deleteAnswer.toLowerCase() === "sí") {
+                                    await this.promptDeleteProduct(rl, productById.id);
+                                } else {
+                                    rl.question("¿Desea agregar un nuevo producto? (Sí/No): ", async (addAnswer) => {
+                                        if (addAnswer.toLowerCase() === "si" || addAnswer.toLowerCase() === "sí") {
+                                            await this.promptAddProduct(rl);
+                                        } else {
+                                            console.log("Muchas gracias.");
+                                            rl.close();
+                                            process.exit(0);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } else if (product) {
+                    console.log("Producto encontrado por código:", product);
 
                     rl.question("¿Desea actualizar la información de este producto? (Sí/No): ", async (answer) => {
                         if (answer.toLowerCase() === "si" || answer.toLowerCase() === "sí") {
@@ -108,23 +150,31 @@ class ProductManager {
                                 if (deleteAnswer.toLowerCase() === "si" || deleteAnswer.toLowerCase() === "sí") {
                                     await this.promptDeleteProduct(rl, product.id);
                                 } else {
-                                    rl.close();
-                                    process.exit(0);
+                                    rl.question("¿Desea agregar un nuevo producto? (Sí/No): ", async (addAnswer) => {
+                                        if (addAnswer.toLowerCase() === "si" || addAnswer.toLowerCase() === "sí") {
+                                            await this.promptAddProduct(rl);
+                                        } else {
+                                            console.log("Muchas gracias.");
+                                            rl.close();
+                                            process.exit(0);
+                                        }
+                                    });
                                 }
                             });
                         }
                     });
                 } else {
-                    console.log("No se encontró ningún producto con el código ingresado.");
+                    console.log("No se encontró ningún producto con el código o ID ingresado.");
 
                     rl.question("¿Desea agregar un nuevo producto? (Sí/No): ", async (answer) => {
                         if (answer.toLowerCase() === "si" || answer.toLowerCase() === "sí") {
                             await this.promptAddProduct(rl);
                         } else {
-                            rl.question("¿Desea eliminar un producto? (Sí/No): ", async (answer) => {
-                                if (answer.toLowerCase() === "si" || answer.toLowerCase() === "sí") {
+                            rl.question("¿Desea eliminar un producto? (Sí/No): ", async (deleteAnswer) => {
+                                if (deleteAnswer.toLowerCase() === "si" || deleteAnswer.toLowerCase() === "sí") {
                                     await this.promptDeleteProduct(rl);
                                 } else {
+                                    console.log("Muchas gracias.");
                                     rl.close();
                                     process.exit(0);
                                 }
@@ -138,6 +188,7 @@ class ProductManager {
             throw error;
         }
     }
+
 
 
 
