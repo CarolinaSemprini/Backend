@@ -103,7 +103,7 @@ class ProductManager {
         }
     }
 
-    // Método que busca un producto por código o da la opción de agregar uno nuevo y de actualizar
+    // Método que busca un producto por ID o por código, da la opción de agregar uno nuevo y de actualizar o eliminar
     async searchProductByCode() {
         try {
             const rl = createInterface({
