@@ -1,12 +1,12 @@
 [
   {
     "id": 1,
-    "title": "product77",
-    "description": "description77",
-    "price": 11000,
-    "thumbnail": "code7",
-    "code": "800",
-    "stock": 800
+    "title": "productoactualizado",
+    "description": "actualizado",
+    "price": 200,
+    "thumbnail": "url",
+    "code": "code7",
+    "stock": 100
   },
   {
     "id": 3,
