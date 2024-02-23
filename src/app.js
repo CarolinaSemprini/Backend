@@ -1,5 +1,5 @@
 const express = require('express');
-const { ProductManager } = require('../desafio1.js');
+const { ProductManager } = require('../ProductManager.js');
 const fs = require('fs').promises;
 const path = require('path');
 
